@@ -52,6 +52,8 @@ export const TranslatePage = () => {
     setLoading(false);
     setMessage((messages) => [...messages, { text: "", isGpt: true }]);
     if (streamPromise) {
+      // eslint-disable-next-line no-restricted-syntax,usado para iterar sobre un objeto iterable
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of
       for await (const text of streamPromise) {
         console.log("text", text);
         setMessage((messages) => {
@@ -63,7 +65,7 @@ export const TranslatePage = () => {
     }
     isRunning.current = false;
   };
-  console.log("termino", message);
+
   return (
     <div className="chat-container">
       <div className="chat-messages">
