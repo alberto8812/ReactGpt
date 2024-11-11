@@ -1,6 +1,7 @@
 export * from './chat-bubbles/GptMessage';
 export * from './chat-bubbles/GptMessageAudio';
 export * from './chat-bubbles/GptMessageImage';
+export * from './chat-bubbles/GptMessageSelectableImage';
 export * from './chat-bubbles/GptOrthograpyMessage';
 export * from './chat-bubbles/MyMessage';
 export * from './loaders/TypingLoader';
