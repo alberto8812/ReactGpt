@@ -1,51 +1,56 @@
 import { useState } from "react";
 import {
   GptMessage,
-  GptMessageImage,
+  GptOrthograpyMessage,
   MyMessage,
   TextMessageBox,
   TypingLoader,
 } from "../../components";
-import { imagegenrationUseCase } from "../../../core";
+import { queryDatabaseUserCase } from "../../../core";
+import { GptQueryMessage } from "../../components/chat-bubbles/GptOrthograpyMessage copy";
 
 interface Message {
   text: string;
   isGpt: boolean;
   info?: {
-    url: string;
-    alt: string;
+    userScore: number;
+    error: string[];
+    message: string;
   };
 }
 
-export const ImageGenerationPage = () => {
+export const QueryDbPage = () => {
   const [isLoading, setLoading] = useState(false);
   const [message, setMessage] = useState<Message[]>([]);
-
-  const handleSendMessage = (message: string) => {};
 
   const handlePost = async (text: string) => {
     setLoading(true);
     setMessage((prev) => [...prev, { text, isGpt: false }]);
     //use case
-    const imageInfo = await imagegenrationUseCase(text);
     setLoading(false);
-    if (!imageInfo) {
-      return setMessage((prev) => [
+    const data = await queryDatabaseUserCase(text);
+
+    if (data && "ok" in data && !data.ok) {
+      setMessage((prev) => [
         ...prev,
-        { text: "No se puedo generar el error", isGpt: true },
+        { text: `no se pudo realizar la correccion`, isGpt: true },
+      ]);
+    } else if (data && "message" in data) {
+      setMessage((prev) => [
+        ...prev,
+        {
+          text: data.message,
+          isGpt: true,
+          info: {
+            error: data.error,
+            message: data.message,
+            userScore: data.accuracy,
+          },
+        },
       ]);
     }
-    setMessage((prev) => [
-      ...prev,
-      {
-        text: text,
-        isGpt: true,
-        info: {
-          url: imageInfo.url,
-          alt: imageInfo.alt,
-        },
-      },
-    ]);
+
+    setLoading(false);
   };
 
   return (
@@ -53,15 +58,15 @@ export const ImageGenerationPage = () => {
       <div className="chat-messages">
         <div className="grid grid-cols-12 gap-y-2">
           {/*Bienbenida */}
-          <GptMessage text="Que Imagen deseas generar hoy?" />
+          <GptMessage text="Hola, que deseas consultar hoy" />
 
           {message.map((m, index) =>
             m.isGpt ? (
-              <GptMessageImage
+              <GptQueryMessage
                 key={index}
-                text={m.text}
-                imageurl={m.info?.url ?? ""}
-                alt={m.info?.alt ?? ""}
+                error={m.info?.error || []}
+                message={m.info?.message || ""}
+                userScore={m.info?.userScore || 0}
               />
             ) : (
               <MyMessage key={index} text={m.text} />

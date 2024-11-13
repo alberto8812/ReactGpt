@@ -8,6 +8,7 @@ import {
   OrthographyPage,
   ProsConsPage,
   ProsConsStreamPage,
+  QueryDbPage,
   TextToAudioPage,
   TranslatePage,
 } from "../pages";
@@ -20,6 +21,13 @@ export const menuRoutes = [
     title: "Ortografía",
     description: "Corregir ortografía",
     component: <OrthographyPage />,
+  },
+  {
+    to: "/QUERYDB",
+    icon: "fa-solid fa-spell-check",
+    title: "consultas DB",
+    description: "Cinformacion de base de datos",
+    component: <QueryDbPage />,
   },
   {
     to: "/pros-cons",
